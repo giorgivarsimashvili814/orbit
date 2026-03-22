@@ -49,7 +49,7 @@ export class AuthController {
     @Req() req: RefreshRequest,
     @Res({ passthrough: true }) res: Response,
   ) {
-    const { accessToken, refreshToken } = await this.authService.refresh(
+    const { user, accessToken, refreshToken } = await this.authService.refresh(
       req.cookies.refreshToken!,
     );
 
@@ -60,7 +60,7 @@ export class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return { accessToken };
+    return { user, accessToken };
   }
 
   @Post('logout')

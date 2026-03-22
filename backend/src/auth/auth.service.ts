@@ -97,6 +97,10 @@ export class AuthService {
       },
     });
 
-    return { accessToken, refreshToken: rawRefreshToken };
+    return {
+      user: { id: userId, email: email },
+      accessToken,
+      refreshToken: rawRefreshToken,
+    };
   }
 }
