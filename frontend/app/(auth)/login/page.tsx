@@ -11,6 +11,7 @@ type LoginForm = {
 };
 
 const Page = () => {
+  const { setAuth } = useAuthStore();
   const router = useRouter();
   const { register, handleSubmit } = useForm<LoginForm>();
 
@@ -20,10 +21,30 @@ const Page = () => {
       body: JSON.stringify(data),
     });
 
+    if (!response.ok) {
+      const err = await response.json();
+      console.error(err.message);
+      return;
+    }
+
     const json = await response.json();
-    console.log(json)
-    useAuthStore.getState().setAuth(json.accessToken, json.user);
-    router.push("/dashboard");
+    setAuth(json.accessToken, json.user);
+
+    const workspacesRes = await apiFetch("/workspace");
+
+    if (!workspacesRes.ok) {
+      router.push("/create-workspace");
+      return;
+    }
+
+    const workspaces = await workspacesRes.json();
+    console.log({ workspaces });
+
+    if (workspaces.length > 0) {
+      router.push(`/${workspaces[0].slug}/dashboard`);
+    } else {
+      router.push("/create-workspace");
+    }
   };
 
   return (
