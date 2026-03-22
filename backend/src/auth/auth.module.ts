@@ -1,8 +1,10 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
+import { JwtAuthGuard } from './guards/auth.guard';
 
+@Global()
 @Module({
   imports: [
     JwtModule.registerAsync({
@@ -13,6 +15,7 @@ import { JwtModule } from '@nestjs/jwt';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, JwtAuthGuard],
+  exports: [JwtAuthGuard, JwtModule],
 })
 export class AuthModule {}
