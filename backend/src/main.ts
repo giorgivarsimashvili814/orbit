@@ -12,7 +12,9 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
   app.enableCors({
-    origin: process.env['FRONTEND_URL'],
+    origin: [
+      'https://orbit-jahokj8z8-giorgivarsimashvili814-4883s-projects.vercel.app',
+    ],
     credentials: true,
   });
 
