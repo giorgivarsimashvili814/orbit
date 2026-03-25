@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { WorkspaceService } from './workspace.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
@@ -22,5 +22,11 @@ export class WorkspaceController {
   @UseGuards(JwtAuthGuard)
   findAll(@CurrentUser() user: AuthenticatedUser) {
     return this.workspaceService.findAll(user.userId);
+  }
+
+  @Get(':slug')
+  @UseGuards(JwtAuthGuard)
+  findOne(@CurrentUser() user: AuthenticatedUser, @Param('slug') slug: string) {
+    return this.workspaceService.findOne(user.userId, slug);
   }
 }

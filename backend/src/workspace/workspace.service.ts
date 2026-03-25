@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { Prisma, WorkspaceRole } from 'generated/prisma/client';
@@ -58,9 +62,19 @@ export class WorkspaceService {
     return `${base}-${suffix}`;
   }
 
-  // findOne(id: number) {
-  //   return `This action returns a #${id} workspace`;
-  // }
+  async findOne(
+    userId: string,
+    slug: string,
+  ): Promise<{ name: string; slug: string }> {
+    const workspace = await this.prisma.workspace.findFirst({
+      where: { slug: slug, members: { some: { userId } } },
+      select: { name: true, slug: true },
+    });
+
+    if (!workspace) throw new NotFoundException('Workspace not found');
+
+    return workspace;
+  }
 
   // update(id: number, updateWorkspaceDto: UpdateWorkspaceDto) {
   //   return `This action updates a #${id} workspace`;
