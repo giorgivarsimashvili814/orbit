@@ -16,9 +16,9 @@ export default function Home() {
         });
         const workspaces = res.data;
         if (!workspaces.length) {
-          navigate("/create-new");
+          navigate("/create-new", { replace: true });
         } else {
-          navigate(`/${workspaces[0].slug}/issues`);
+          navigate(`/${workspaces[0].slug}/issues`, { replace: true });
         }
       } finally {
         setLoading(false);

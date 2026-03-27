@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import api from "../lib/api";
 import { useAuth } from "../context/useAuth";
+import Sidebar from "./Sidebar";
 
 export default function DashboardLayout() {
   const navigate = useNavigate();
@@ -11,7 +12,6 @@ export default function DashboardLayout() {
     name: string;
     slug: string;
   }>();
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function checkWorkspace() {
@@ -22,20 +22,18 @@ export default function DashboardLayout() {
         setWorkspace(res.data);
       } catch {
         navigate("/", { replace: true });
-      } finally {
-        setLoading(false);
       }
     }
     checkWorkspace();
   }, [slug, accessToken, navigate]);
 
-  if (loading) return <div>Loading...</div>;
+  if (!workspace) return <div>Loading...</div>;
 
   return (
-    <div className="flex h-screen bg-gray-100 p-2 gap-2">
-      <aside className="w-82.5 p-2">{workspace?.name}</aside>
-      <main className="flex-1 bg-white rounded-md p-2">
-        <Outlet />
+    <div className="flex h-screen bg-[#f3f3f4] p-2 gap-2">
+      <Sidebar workspace={workspace} />
+      <main className="basis-4/5 bg-white rounded-lg">
+        <Outlet context={workspace} />
       </main>
     </div>
   );

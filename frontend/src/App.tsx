@@ -6,6 +6,8 @@ import CreateWs from "./pages/CreateWs";
 import DashboardLayout from "./components/DashboardLayout";
 import Home from "./pages/Home";
 import IssuesPage from "./pages/IssuesPage";
+import MembersPage from "./pages/MembersPage";
+import ProjectsPage from "./pages/ProjectsPage";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -52,6 +54,13 @@ export default function App() {
           <Route index element={<Navigate to="issues" replace />} />
 
           <Route path="issues" element={<IssuesPage />} />
+
+          <Route path="projects">
+            <Route index element={<Navigate to="all" replace />} />
+            <Route path="all" element={<ProjectsPage />} />
+          </Route>
+
+          <Route path="members" element={<MembersPage />} />
         </Route>
 
         <Route path="/404" element={<h1>404 Not Found</h1>} />
