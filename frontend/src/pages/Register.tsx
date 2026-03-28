@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/useAuth";
+import { useAuth } from "../context/auth/useAuth";
 import { Label } from "../components/ui/label";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
@@ -22,7 +22,7 @@ interface RegisterForm {
 
 export default function Register() {
   const navigate = useNavigate();
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
 
   const {
     register,
@@ -31,7 +31,6 @@ export default function Register() {
     formState: { errors, isSubmitting },
   } = useForm<RegisterForm>();
 
-  if (loading) return null;
   if (user) return <Navigate to="/dashboard" />;
 
   async function onSubmit(data: RegisterForm) {

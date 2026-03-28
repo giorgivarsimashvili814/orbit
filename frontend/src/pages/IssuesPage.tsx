@@ -1,18 +1,23 @@
-import { useOutletContext } from "react-router-dom";
 import AddItem from "@/components/AddItem";
-import { useAuth } from "../context/useAuth";
-
-type ContextType = { name: string; slug: string };
+import { useAuth } from "../context/auth/useAuth";
+import { useWorkspace } from "@/context/workspace/useWorkspace";
+import { Navigate, useParams } from "react-router-dom";
 
 export default function IssuesPage() {
-  const workspace = useOutletContext<ContextType>();
   const { user } = useAuth();
+  const { slug } = useParams();
+  const { workspaces } = useWorkspace();
+  const currentWorkspace = workspaces.find((w) => w.slug === slug);
+
+  if (!currentWorkspace) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <>
       <AddItem text="Issues" />
       <h2>{user?.email}</h2>
-      <h3>{workspace.slug}</h3>
+      <h3>{currentWorkspace.slug}</h3>
     </>
   );
 }

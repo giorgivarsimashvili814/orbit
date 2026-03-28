@@ -1,32 +1,18 @@
-import { useEffect, useState } from "react";
-import api from "../lib/api";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/useAuth";
+import { useWorkspace } from "../context/workspace/useWorkspace";
 
 export default function Home() {
   const navigate = useNavigate();
-  const { accessToken } = useAuth();
-  const [loading, setLoading] = useState(true);
+  const { workspaces } = useWorkspace();
 
   useEffect(() => {
-    async function fetchWorkspaces() {
-      try {
-        const res = await api.get("/workspace", {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        });
-        const workspaces = res.data;
-        if (!workspaces.length) {
-          navigate("/create-new", { replace: true });
-        } else {
-          navigate(`/${workspaces[0].slug}/issues`, { replace: true });
-        }
-      } finally {
-        setLoading(false);
-      }
+    if (workspaces.length === 0) {
+      navigate("/create-new", { replace: true });
+    } else {
+      navigate(`/${workspaces[0].slug}/issues`, { replace: true });
     }
+  }, [workspaces, navigate]);
 
-    if (accessToken) fetchWorkspaces();
-  }, [accessToken]);
-
-  if (loading) return <p>Loading...</p>;
+  return null
 }

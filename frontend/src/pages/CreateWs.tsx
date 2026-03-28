@@ -1,5 +1,4 @@
 import { useForm } from "react-hook-form";
-import { useAuth } from "../context/useAuth";
 import { Label } from "../components/ui/label";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
@@ -13,6 +12,8 @@ import {
 import axios from "axios";
 import api from "../lib/api";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/auth/useAuth";
+import { useWorkspace } from "@/context/workspace/useWorkspace";
 
 interface CreateWs {
   name: string;
@@ -21,6 +22,7 @@ interface CreateWs {
 export default function CreateWs() {
   const navigate = useNavigate();
   const { loading, accessToken } = useAuth();
+  const { refreshWorkspaces } = useWorkspace();
 
   const {
     register,
@@ -38,6 +40,7 @@ export default function CreateWs() {
       });
 
       const workspace = res.data;
+      await refreshWorkspaces();
       navigate(`/${workspace.slug}/issues`);
     } catch (error) {
       if (axios.isAxiosError(error)) {

@@ -1,39 +1,24 @@
-import { useEffect, useState } from "react";
-import { Outlet, useNavigate, useParams } from "react-router-dom";
-import api from "../lib/api";
-import { useAuth } from "../context/useAuth";
+import { Navigate, Outlet, useParams } from "react-router-dom";
 import Sidebar from "./Sidebar";
+import { useWorkspace } from "@/context/workspace/useWorkspace";
 
 export default function DashboardLayout() {
-  const navigate = useNavigate();
-  const { accessToken } = useAuth();
   const { slug } = useParams();
-  const [workspace, setWorkspace] = useState<{
-    name: string;
-    slug: string;
-  }>();
+  const { workspaces, loading } = useWorkspace();
 
-  useEffect(() => {
-    async function checkWorkspace() {
-      try {
-        const res = await api.get(`/workspace/${slug}`, {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        });
-        setWorkspace(res.data);
-      } catch {
-        navigate("/", { replace: true });
-      }
-    }
-    checkWorkspace();
-  }, [slug, accessToken, navigate]);
+  if (loading) return null;
 
-  if (!workspace) return <div>Loading...</div>;
+  const currentWorkspace = workspaces.find((ws) => ws.slug === slug);
+
+  if (!currentWorkspace) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <div className="flex h-screen bg-[#f3f3f4] p-2 gap-2">
-      <Sidebar workspace={workspace} />
+      <Sidebar />
       <main className="basis-4/5 bg-white rounded-lg">
-        <Outlet context={workspace} />
+        <Outlet />
       </main>
     </div>
   );

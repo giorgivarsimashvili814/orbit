@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/useAuth";
+import { useAuth } from "../context/auth/useAuth";
 import { Label } from "../components/ui/label";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
@@ -21,7 +21,7 @@ interface LoginForm {
 
 export default function Login() {
   const navigate = useNavigate();
-  const { login, user, loading } = useAuth();
+  const { login, user } = useAuth();
 
   const {
     register,
@@ -30,7 +30,6 @@ export default function Login() {
     formState: { errors, isSubmitting },
   } = useForm<LoginForm>();
 
-  if (loading) return null;
   if (user) return <Navigate to="/" />;
 
   async function onSubmit(data: LoginForm) {

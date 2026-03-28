@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../lib/api";
+import api from "../../lib/api";
 import { AuthContext, type User } from "./AuthContext";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {

@@ -1,5 +1,5 @@
 import AddItem from "@/components/AddItem";
-import { useAuth } from "../context/useAuth";
+import { useAuth } from "../context/auth/useAuth";
 
 export default function ProjectsPage() {
   const { user } = useAuth();
