@@ -36,6 +36,7 @@ export class AuthController {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
+      path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -57,6 +58,7 @@ export class AuthController {
       httpOnly: true,
       secure: true,
       sameSite: 'none',
+      path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -71,6 +73,11 @@ export class AuthController {
   ) {
     const token = req.cookies.refreshToken;
     if (token) await this.authService.logout(token);
-    res.clearCookie('refreshToken');
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none',
+      path: '/',
+    });
   }
 }
