@@ -15,7 +15,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
   app.enableCors({
-    origin: ['https://orbit-blond-pi.vercel.app'],
+    origin: ['https://app.orbit-dev.cv', 'http://localhost:5173'],
     credentials: true,
   });
 
