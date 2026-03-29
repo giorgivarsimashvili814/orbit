@@ -20,19 +20,17 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 import { useAuth } from "@/context/auth/useAuth";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useWorkspace } from "@/context/workspace/useWorkspace";
+// import { useTeam } from "@/context/team/useTeam";
 
 export default function Sidebar() {
   const { slug } = useParams();
   const { logout, user } = useAuth();
   const navigate = useNavigate();
   const { workspaces } = useWorkspace();
-  const currentWorkspace = workspaces.find((w) => w.slug === slug);
-
-  if (!currentWorkspace) {
-    return <Navigate to="/" replace />;
-  }
+  const currentWorkspace = workspaces.find((w) => w.slug === slug)!;
+  // const { teams } = useTeam();
 
   const handleLogout = async () => {
     try {
@@ -66,7 +64,7 @@ export default function Sidebar() {
                   {user?.email}
                 </span>
 
-                {workspaces?.map((ws) => (
+                {workspaces.map((ws) => (
                   <DropdownMenuItem
                     key={ws.slug}
                     className="flex items-center justify-between"
@@ -115,6 +113,9 @@ export default function Sidebar() {
           Members
         </NavItem>
       </div>
+      {/* {teams.map((t) => (
+        <div key={t.id}>{t.name}</div>
+      ))} */}
     </div>
   );
 }

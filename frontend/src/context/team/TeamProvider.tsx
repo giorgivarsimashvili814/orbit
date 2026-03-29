@@ -1,17 +1,23 @@
 import { useEffect, useCallback, type ReactNode, useState } from "react";
 import api from "../../lib/api";
 import { useAuth } from "../auth/useAuth";
-import { WorkspaceContext, type Workspace } from "./WorkspaceContext";
+import { TeamContext, type Team } from "./TeamContext";
 
-export function WorkspaceProvider({ children }: { children: ReactNode }) {
+export function TeamProvider({
+  children,
+  workspaceSlug,
+}: {
+  children: ReactNode;
+  workspaceSlug: string;
+}) {
   const { user, accessToken, loading: authLoading } = useAuth();
 
-  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+  const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
 
   const isGlobalLoading = authLoading || loading;
 
-  const refreshWorkspaces = useCallback(async () => {
+  const refreshTeams = useCallback(async () => {
     if (authLoading || !user || !accessToken) {
       setLoading(false);
       return;
@@ -19,28 +25,28 @@ export function WorkspaceProvider({ children }: { children: ReactNode }) {
 
     try {
       setLoading(true);
-      const res = await api.get("/workspace", {
+      const res = await api.get(`/${workspaceSlug}/teams`, {
         headers: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-      setWorkspaces(res.data);
+      setTeams(res.data);
     } catch {
-      setWorkspaces([]);
+      setTeams([]);
     } finally {
       setLoading(false);
     }
-  }, [user, accessToken, authLoading]);
+  }, [user, accessToken, authLoading, workspaceSlug]);
 
   useEffect(() => {
-    refreshWorkspaces();
-  }, [refreshWorkspaces]);
+    refreshTeams();
+  }, [refreshTeams]);
 
   return (
-    <WorkspaceContext.Provider
-      value={{ workspaces, loading: isGlobalLoading, refreshWorkspaces }}
+    <TeamContext.Provider
+      value={{ teams, loading: isGlobalLoading, refreshTeams }}
     >
       {children}
-    </WorkspaceContext.Provider>
+    </TeamContext.Provider>
   );
 }
