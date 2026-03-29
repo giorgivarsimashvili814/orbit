@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { WorkspaceService } from './workspace.service';
 import { CreateWorkspaceDto } from './dto/create-workspace.dto';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
@@ -8,6 +16,12 @@ import { JwtAuthGuard } from 'src/auth/guards/auth.guard';
 @Controller('workspace')
 export class WorkspaceController {
   constructor(private readonly workspaceService: WorkspaceService) {}
+
+  @Get('check-slug')
+  async checkSlug(@Query('slug') slug: string) {
+    const exists = await this.workspaceService.isSlugTaken(slug);
+    return { available: !exists };
+  }
 
   @Post()
   @UseGuards(JwtAuthGuard)

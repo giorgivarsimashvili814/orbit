@@ -41,6 +41,7 @@ model Workspace {
   updatedAt DateTime @updatedAt
 
   members WorkspaceMember[]
+  teams   Team[]
 
   @@map("workspaces")
 }
@@ -57,6 +58,8 @@ model WorkspaceMember {
 
   createdAt DateTime @default(now())
 
+  teamMembers TeamMember[]
+
   @@unique([userId, workspaceId])
   @@map("workspace_members")
 }
@@ -64,4 +67,34 @@ model WorkspaceMember {
 enum WorkspaceRole {
   OWNER
   MEMBER
+}
+
+model Team {
+  id        String   @id @default(uuid())
+  name      String
+  key       String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  members TeamMember[]
+
+  @@unique([workspaceId, key])
+  @@map("teams")
+}
+
+model TeamMember {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  workspaceMemberId String
+  workspaceMember   WorkspaceMember @relation(fields: [workspaceMemberId], references: [id], onDelete: Cascade)
+
+  teamId String
+  team   Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceMemberId, teamId])
+  @@map("team_members")
 }

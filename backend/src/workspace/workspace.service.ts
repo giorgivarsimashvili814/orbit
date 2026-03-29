@@ -16,27 +16,48 @@ export class WorkspaceService {
     dto: CreateWorkspaceDto,
   ): Promise<{ slug: string }> {
     try {
-      const workspace = await this.prisma.workspace.create({
-        data: {
-          name: dto.name,
-          slug: this.generateSlug(dto.name),
-          members: {
-            create: {
-              userId,
-              role: WorkspaceRole.OWNER,
+      const workspace = await this.prisma.$transaction(async (tx) => {
+        const workspace = await tx.workspace.create({
+          data: {
+            name: dto.name,
+            slug: dto.slug,
+            members: {
+              create: {
+                userId,
+                role: WorkspaceRole.OWNER,
+              },
+            },
+            teams: {
+              create: {
+                name: dto.name,
+                key: this.generateKey(dto.name),
+              },
             },
           },
-        },
-        select: { slug: true },
+          select: {
+            slug: true,
+            members: { select: { id: true } },
+            teams: { select: { id: true } },
+          },
+        });
+
+        const workspaceMemberId = workspace.members[0].id;
+        const teamId = workspace.teams[0].id;
+
+        await tx.teamMember.create({
+          data: { workspaceMemberId, teamId },
+        });
+
+        return workspace;
       });
 
-      return workspace;
-    } catch (error: unknown) {
+      return { slug: workspace.slug };
+    } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === 'P2002'
       ) {
-        throw new ConflictException('Workspace slug already taken');
+        throw new ConflictException('This workspace URL is already taken.');
       }
       throw error;
     }
@@ -49,17 +70,6 @@ export class WorkspaceService {
       },
       select: { name: true, slug: true },
     });
-  }
-
-  private generateSlug(name: string): string {
-    const base = name
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '');
-
-    const suffix = Math.random().toString(36).slice(2, 6);
-    return `${base}-${suffix}`;
   }
 
   async findOne(
@@ -76,11 +86,21 @@ export class WorkspaceService {
     return workspace;
   }
 
-  // update(id: number, updateWorkspaceDto: UpdateWorkspaceDto) {
-  //   return `This action updates a #${id} workspace`;
-  // }
+  async isSlugTaken(slug: string): Promise<boolean> {
+    const workspace = await this.prisma.workspace.findUnique({
+      where: { slug },
+      select: { id: true },
+    });
+    return !!workspace;
+  }
 
-  // remove(id: number) {
-  //   return `This action removes a #${id} workspace`;
-  // }
+  private generateKey(name: string): string {
+    return (
+      name
+        .trim()
+        .toUpperCase()
+        .replace(/[^A-Z]/g, '')
+        .slice(0, 5) || 'TEAM'
+    );
+  }
 }
