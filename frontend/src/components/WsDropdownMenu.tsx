@@ -52,7 +52,6 @@ export default function WsDropdownMenu() {
               <span className="text-xs text-gray-600 font-medium px-1.5 py-1 truncate">
                 {user!.email}
               </span>
-              <DropdownMenuItem>kle</DropdownMenuItem>
               {workspaces.map((ws) => (
                 <DropdownMenuItem
                   key={ws.slug}

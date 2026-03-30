@@ -99,7 +99,7 @@ export default function CreateWs() {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       await refreshWorkspaces();
-      navigate(`/${res.data.slug}/issues`);
+      navigate(`/${res.data.slug}/team/${res.data.teamKey}/issues/active`);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         setError("slug", {
