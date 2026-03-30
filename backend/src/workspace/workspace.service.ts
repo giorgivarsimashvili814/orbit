@@ -72,12 +72,21 @@ export class WorkspaceService {
     }
   }
 
-  async findAll(userId: string): Promise<{ name: string; slug: string }[]> {
-    return this.prisma.workspace.findMany({
+  async findAll(userId: string) {
+    return await this.prisma.workspace.findMany({
       where: {
         members: { some: { userId } },
       },
-      select: { name: true, slug: true },
+      select: {
+        name: true,
+        slug: true,
+        teams: {
+          take: 1,
+          select: {
+            key: true,
+          },
+        },
+      },
     });
   }
 
