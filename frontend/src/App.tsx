@@ -21,7 +21,12 @@ import { Spinner } from "./components/ui/spinner";
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
 
-  if (loading) return null;
+  if (loading)
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <Spinner />
+      </div>
+    );
 
   if (!user) return <Navigate to="/login" replace />;
 
@@ -65,13 +70,28 @@ export default function App() {
           <Route path="/create-new" element={<CreateWs />} />
 
           <Route path="/:slug" element={<DashboardLayout />}>
-            <Route index element={<Navigate to="issues" replace />} />
-            <Route path="issues" element={<IssuesPage />} />
-            <Route path="projects">
-              <Route index element={<Navigate to="all" replace />} />
-              <Route path="all" element={<ProjectsPage />} />
+            <Route path="team" element={<Navigate to="/" replace />} />
+            <Route path="my-issues">
+              <Route index element={<Navigate to="assigned" replace />} />
+              <Route path=":filter" element={<IssuesPage />} />
             </Route>
             <Route path="members" element={<MembersPage />} />
+            <Route path="projects">
+              <Route index element={<Navigate to="all" replace />} />
+              <Route path=":filter" element={<ProjectsPage />} />
+            </Route>
+
+            <Route path="team/:key">
+              <Route index element={<Navigate to="issues/active" replace />} />
+              <Route path="issues">
+                <Route index element={<Navigate to="active" replace />} />
+                <Route path=":filter" element={<IssuesPage />} />
+              </Route>
+              <Route path="projects">
+                <Route index element={<Navigate to="all" replace />} />
+                <Route path=":filter" element={<ProjectsPage />} />
+              </Route>
+            </Route>
           </Route>
         </Route>
 
