@@ -1,11 +1,8 @@
 import AddItem from "@/components/AddItem";
 import { useAuth } from "../context/auth/useAuth";
 import { useWorkspace } from "@/context/workspace/useWorkspace";
-import { Navigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useTeam } from "@/context/team/useTeam";
-
-const TEAM_FILTERS = ["active", "all", "backlog"];
-const MY_FILTERS = ["assigned"];
 
 export default function IssuesPage() {
   const { user } = useAuth();
@@ -14,12 +11,6 @@ export default function IssuesPage() {
   const currentWorkspace = workspaces.find((w) => w.slug === slug)!;
   const { teams } = useTeam();
   const currentTeam = key ? teams.find((t) => t.key === key) : null;
-
-  const validFilters = currentTeam ? TEAM_FILTERS : MY_FILTERS;
-
-  if (!validFilters.includes(filter!)) {
-    return <Navigate to={currentTeam ? "active" : "assigned"} replace />;
-  }
 
   return (
     <>

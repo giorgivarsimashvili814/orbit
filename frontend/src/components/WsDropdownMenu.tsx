@@ -22,6 +22,7 @@ export default function WsDropdownMenu() {
   const { slug } = useParams();
   const currentWorkspace = workspaces.find((w) => w.slug === slug)!;
 
+
   const handleLogout = async () => {
     try {
       await logout();
@@ -56,7 +57,11 @@ export default function WsDropdownMenu() {
                 <DropdownMenuItem
                   key={ws.slug}
                   className="flex items-center justify-between"
-                  onClick={() => navigate(`/${ws.slug}/issues`)}
+                  onClick={() =>
+                    navigate(
+                      `/${ws.slug}/team/${ws.teams[0].key}/issues/active`,
+                    )
+                  }
                 >
                   <span className="truncate">{ws.name}</span>
                   {ws.slug === slug && (
