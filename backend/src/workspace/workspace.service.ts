@@ -14,9 +14,9 @@ export class WorkspaceService {
   async create(
     userId: string,
     dto: CreateWorkspaceDto,
-  ): Promise<{ slug: string }> {
+  ): Promise<{ slug: string; teamKey: string }> {
     try {
-      const workspace = await this.prisma.$transaction(async (tx) => {
+      const result = await this.prisma.$transaction(async (tx) => {
         const workspace = await tx.workspace.create({
           data: {
             name: dto.name,
@@ -37,21 +37,30 @@ export class WorkspaceService {
           select: {
             slug: true,
             members: { select: { id: true } },
-            teams: { select: { id: true } },
+            teams: {
+              select: {
+                id: true,
+                key: true,
+              },
+            },
           },
         });
 
         const workspaceMemberId = workspace.members[0].id;
         const teamId = workspace.teams[0].id;
+        const teamKey = workspace.teams[0].key;
 
         await tx.teamMember.create({
           data: { workspaceMemberId, teamId },
         });
 
-        return workspace;
+        return {
+          slug: workspace.slug,
+          teamKey,
+        };
       });
 
-      return { slug: workspace.slug };
+      return result;
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&
