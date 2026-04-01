@@ -18,7 +18,7 @@ function DashboardContent() {
   return (
     <div className="flex h-screen bg-[#f3f3f4] p-2 gap-2">
       <Sidebar />
-      <main className="basis-4/5 bg-white rounded-lg">
+      <main className="w-full bg-white rounded-lg">
         <Outlet />
       </main>
     </div>
