@@ -1,6 +1,5 @@
 import { useForm } from "react-hook-form";
 import { Link, Navigate, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/auth/useAuth";
 import { Label } from "../components/ui/label";
 import { Input } from "../components/ui/input";
 import { Button } from "../components/ui/button";
@@ -14,6 +13,7 @@ import {
 } from "../components/ui/card";
 import api from "../lib/api";
 import axios from "axios";
+import { useAuth } from "@/context/auth/useAuth";
 
 interface RegisterForm {
   email: string;
@@ -31,7 +31,7 @@ export default function Register() {
     formState: { errors, isSubmitting },
   } = useForm<RegisterForm>();
 
-  if (user) return <Navigate to="/dashboard" />;
+  if (user) return <Navigate to="/" />;
 
   async function onSubmit(data: RegisterForm) {
     try {

@@ -15,7 +15,7 @@ export default function ProjectsPage() {
   const currentTeam = key ? teams.find((t) => t.key === key) : null;
 
   if (!VALID_FILTERS.includes(filter!)) {
-    return <Navigate to="all" replace />;
+    return <Navigate to="/all" replace />;
   }
 
   return (

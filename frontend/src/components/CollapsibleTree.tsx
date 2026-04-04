@@ -46,8 +46,16 @@ export function CollapsibleTree() {
         name: team.name,
         icon: Settings,
         items: [
-          { name: "Issues", href: `/${slug}/team/${team.key}/issues/active`, icon: Layers },
-          { name: "Projects", href: `/${slug}/team/${team.key}/projects/all`, icon: Box },
+          {
+            name: "Issues",
+            href: `/${slug}/team/${team.key}/issues/active`,
+            icon: Layers,
+          },
+          {
+            name: "Projects",
+            href: `/${slug}/team/${team.key}/projects/all`,
+            icon: Box,
+          },
         ],
       })),
     },
@@ -85,7 +93,7 @@ export function CollapsibleTree() {
         variant="ghost"
         size="sm"
         onClick={() => fileItem.href && navigate(fileItem.href)}
-        className={`w-full justify-start gap-2 ${
+        className={`w-full justify-start gap-2 hover:bg-[#e5e5e6] ${
           isActive ? "bg-[#e5e5e6] text-black font-medium" : ""
         }`}
       >
@@ -99,5 +107,5 @@ export function CollapsibleTree() {
     <div className="flex flex-col text-gray-700 gap-1">
       {fileTree.map((item) => renderItem(item))}
     </div>
-  )
+  );
 }

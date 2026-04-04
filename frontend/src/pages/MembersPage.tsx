@@ -1,5 +1,5 @@
 import AddItem from "@/components/AddItem";
-import { useAuth } from "../context/auth/useAuth";
+import { useAuth } from "@/context/auth/useAuth";
 
 export default function MembersPage() {
   const { user } = useAuth();

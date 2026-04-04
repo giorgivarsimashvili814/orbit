@@ -5,12 +5,11 @@ export interface User {
   email: string;
 }
 
-export interface AuthContextType {
+interface AuthContextType {
   user: User | null;
-  accessToken: string | null;
-  loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  loading: boolean;
 }
 
-export const AuthContext = createContext<AuthContextType>(null!);
+export const AuthContext = createContext<AuthContextType | null>(null);

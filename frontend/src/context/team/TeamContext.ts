@@ -1,3 +1,4 @@
+import type { QueryObserverResult } from "@tanstack/react-query";
 import { createContext } from "react";
 
 export interface Team {
@@ -9,7 +10,7 @@ export interface Team {
 export interface TeamContextType {
   teams: Team[];
   loading: boolean;
-  refreshTeams: () => Promise<void>;
+  refreshTeams: () => Promise<QueryObserverResult>;
 }
 
 export const TeamContext = createContext<TeamContextType>(null!);

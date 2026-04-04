@@ -1,44 +1,29 @@
-import { useEffect, useCallback, type ReactNode, useState } from "react";
+import { type ReactNode } from "react";
+import { useQuery } from "@tanstack/react-query";
 import api from "../../lib/api";
-import { useAuth } from "../auth/useAuth";
 import { WorkspaceContext, type Workspace } from "./WorkspaceContext";
+import { useAuth } from "../auth/useAuth";
 
 export function WorkspaceProvider({ children }: { children: ReactNode }) {
-  const { user, accessToken, loading: authLoading } = useAuth();
+  const { user } = useAuth();
 
-  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const isGlobalLoading = authLoading || loading;
-
-  const refreshWorkspaces = useCallback(async () => {
-    if (authLoading || !user || !accessToken) {
-      setLoading(false);
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const res = await api.get("/workspace", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-      setWorkspaces(res.data);
-    } catch {
-      setWorkspaces([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [user, accessToken, authLoading]);
-
-  useEffect(() => {
-    refreshWorkspaces();
-  }, [refreshWorkspaces]);
+  const {
+    data: workspaces = [],
+    isLoading,
+    refetch,
+  } = useQuery({
+    queryKey: ["workspaces"],
+    queryFn: async () => {
+      const res = await api.get("/workspace");
+      return res.data as Workspace[];
+    },
+    enabled: !!user,
+    staleTime: 1000 * 60,
+  });
 
   return (
     <WorkspaceContext.Provider
-      value={{ workspaces, loading: isGlobalLoading, refreshWorkspaces }}
+      value={{ workspaces, loading: isLoading, refreshWorkspaces: refetch }}
     >
       {children}
     </WorkspaceContext.Provider>

@@ -1,4 +1,5 @@
 import { createContext } from "react";
+import type { QueryObserverResult } from "@tanstack/react-query";
 
 export interface Workspace {
   name: string;
@@ -9,7 +10,7 @@ export interface Workspace {
 export interface WorkspaceContextType {
   workspaces: Workspace[];
   loading: boolean;
-  refreshWorkspaces: () => Promise<void>;
+  refreshWorkspaces: () => Promise<QueryObserverResult>;
 }
 
 export const WorkspaceContext = createContext<WorkspaceContextType>(null!);

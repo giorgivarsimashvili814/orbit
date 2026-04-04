@@ -5,7 +5,6 @@ import {
   Navigate,
   Outlet,
 } from "react-router-dom";
-import { useAuth } from "./context/auth/useAuth";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import CreateWs from "./pages/CreateWs";
@@ -17,24 +16,10 @@ import ProjectsPage from "./pages/ProjectsPage";
 import { WorkspaceProvider } from "./context/workspace/WorkspaceProvider";
 import { useWorkspace } from "./context/workspace/useWorkspace";
 import { Spinner } from "./components/ui/spinner";
-
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
-
-  if (loading)
-    return (
-      <div className="h-screen flex items-center justify-center">
-        <Spinner />
-      </div>
-    );
-
-  if (!user) return <Navigate to="/login" replace />;
-
-  return <>{children}</>;
-}
+import { useAuth } from "./context/auth/useAuth";
 
 function AppGate() {
-  const { loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { loading: wsLoading } = useWorkspace();
 
   if (authLoading || wsLoading) {
@@ -45,16 +30,16 @@ function AppGate() {
     );
   }
 
+  if (!user) return <Navigate to="/login" replace />;
+
   return <Outlet />;
 }
 
 function AuthLayout() {
   return (
-    <ProtectedRoute>
-      <WorkspaceProvider>
-        <AppGate />
-      </WorkspaceProvider>
-    </ProtectedRoute>
+    <WorkspaceProvider>
+      <AppGate />
+    </WorkspaceProvider>
   );
 }
 

@@ -1,8 +1,10 @@
 import AddItem from "@/components/AddItem";
 import { useAuth } from "../context/auth/useAuth";
 import { useWorkspace } from "@/context/workspace/useWorkspace";
-import { useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import { useTeam } from "@/context/team/useTeam";
+
+const VALID_FILTERS = ["all", "active", "archived", "assigned"];
 
 export default function IssuesPage() {
   const { user } = useAuth();
@@ -11,6 +13,10 @@ export default function IssuesPage() {
   const currentWorkspace = workspaces.find((w) => w.slug === slug)!;
   const { teams } = useTeam();
   const currentTeam = key ? teams.find((t) => t.key === key) : null;
+
+  if (!VALID_FILTERS.includes(filter!)) {
+    return <Navigate to="/all" replace />;
+  }
 
   return (
     <>

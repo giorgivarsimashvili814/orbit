@@ -12,7 +12,6 @@ import {
 import axios from "axios";
 import api from "../lib/api";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/context/auth/useAuth";
 import { useWorkspace } from "@/context/workspace/useWorkspace";
 import { useEffect } from "react";
 import { useDebouncedCallback } from "use-debounce";
@@ -33,7 +32,6 @@ function toSlug(name: string): string {
 }
 
 const slugValidationRules = (
-  accessToken: string | null,
   checkSlug: () => void,
   clearErrors: () => void,
 ) => ({
@@ -54,9 +52,7 @@ const slugValidationRules = (
   validate: async (value: string) => {
     if (!value || value.length < 3) return true;
     try {
-      const res = await api.get(`/workspace/check-slug?slug=${value}`, {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
+      const res = await api.get(`/workspace/check-slug?slug=${value}`);
       return res.data.available || "This URL is already taken";
     } catch {
       return true;
@@ -66,7 +62,6 @@ const slugValidationRules = (
 
 export default function CreateWs() {
   const navigate = useNavigate();
-  const { accessToken } = useAuth();
   const { refreshWorkspaces } = useWorkspace();
 
   const {
@@ -95,9 +90,7 @@ export default function CreateWs() {
 
   async function onSubmit(data: CreateWs) {
     try {
-      const res = await api.post("/workspace", data, {
-        headers: { Authorization: `Bearer ${accessToken}` },
-      });
+      const res = await api.post("/workspace", data);
       await refreshWorkspaces();
       navigate(`/${res.data.slug}/team/${res.data.teamKey}/issues/active`);
     } catch (error) {
@@ -157,9 +150,7 @@ export default function CreateWs() {
                     className="pl-29.5"
                     {...register(
                       "slug",
-                      slugValidationRules(accessToken, checkSlug, () =>
-                        clearErrors("slug"),
-                      ),
+                      slugValidationRules(checkSlug, () => clearErrors("slug")),
                     )}
                   />
                   <span className="absolute left-3 text-sm text-muted-foreground pointer-events-none">
